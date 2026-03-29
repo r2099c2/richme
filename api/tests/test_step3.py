@@ -22,8 +22,9 @@ def test_health() -> None:
 
 
 def test_admin_login_disabled_without_password(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("ADMIN_PASSWORD", raising=False)
-    monkeypatch.delenv("ADMIN_PASSWORD_HASH", raising=False)
+    # 覆盖磁盘 .env：空串经 Settings 归一为 None，等价于未配置管理员密码
+    monkeypatch.setenv("ADMIN_PASSWORD", "")
+    monkeypatch.setenv("ADMIN_PASSWORD_HASH", "")
     client = _fresh_client(monkeypatch)
     r = client.post("/api/v1/admin/auth/login", json={"password": "x"})
     assert r.status_code == 503

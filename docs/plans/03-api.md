@@ -118,8 +118,9 @@ api/src/richme_api/
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
+| GET | `/api/v1/admin/themes` | 列表（后台维护用），按 `id` 降序。 |
 | POST | `/api/v1/admin/themes` | 创建主题：`parent_id`（`null` = 顶层主题）、`slug`、`name`、`narrative?`、`started_at`、`ended_at?`（`null` = 进行中）。 |
-| PATCH | `/api/v1/admin/themes/{theme_id}` | 调整名称、叙事、时间边界（谨慎：改时间影响「按日聚合」结果，需在前端提示）。 |
+| PATCH | `/api/v1/admin/themes/{theme_id}` | 调整名称、叙事、时间边界（谨慎：改时间影响「按日聚合」结果，需在前端提示）。若要「结束」一轮主题而不删库记录，将 `ended_at` 设为结束时刻即可。**不提供**主题物理删除 API（将来若需要再开放）。 |
 
 ### 6.3 主题内角色时段（`theme_stock_roles`）
 

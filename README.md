@@ -43,9 +43,9 @@ pnpm install
 pnpm dev
 ```
 
-浏览器打开终端提示的地址（一般为 http://127.0.0.1:5173）。
+浏览器打开终端提示的地址（一般为 http://127.0.0.1:5173）。路由：**市场主线** `/`、**后台登录** `/admin/login`、**后台管理** `/admin`。
 
-可选：复制 `apps/web/.env.example` 为 `apps/web/.env`，设置 `VITE_API_BASE_URL`。
+复制 `apps/web/.env.example` 为 `apps/web/.env`，设置 `VITE_API_BASE_URL`（与 API 同源或可达地址）。
 
 ## 实施计划
 

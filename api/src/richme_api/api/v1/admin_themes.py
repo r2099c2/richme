@@ -14,6 +14,12 @@ from richme_api.schemas.theme import RoleCreate, ThemeCreate, ThemePatch, ThemeR
 router = APIRouter(prefix="/themes", dependencies=[Depends(get_current_admin)])
 
 
+@router.get("", response_model=list[ThemeRowOut])
+def list_themes(db: Annotated[Session, Depends(get_db)]) -> list[Theme]:
+    rows = db.scalars(select(Theme).order_by(Theme.id.desc())).all()
+    return list(rows)
+
+
 @router.post("", response_model=ThemeRowOut, status_code=status.HTTP_201_CREATED)
 def create_theme(
     body: ThemeCreate,

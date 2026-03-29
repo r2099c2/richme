@@ -188,7 +188,7 @@ uv run alembic upgrade head
 **说明**：下列两项属于 **步骤 3 / 4** 的文档与实现工作；步骤 2 只需在本节 **登记** 待办（已完成）。
 
 - [x] [03-api.md](03-api.md)：已改为 **`admin`（JWT）+ `public`（匿名）** 最小集；移除 `daily_*` 与 `/days/...`；与 `themes` / `theme_stock_roles` / `concepts` / `stock_concepts` 对齐（见该文 §3.5–3.7）。
-- [ ] [04-web-ui.md](04-web-ui.md)：将「按日主题编辑」等旧描述调整为 **后台上传/维护 + 前台按日主题展示**（与 03 一致）。
+- [x] [04-web-ui.md](04-web-ui.md)：已改为 **三页面**（市场主线 + 后台登录 + 后台维护）与 [03-api](03-api.md) 对齐。
 
 （索引条目同步于 [docs/plans/README.md](README.md) 中「步骤 2 修订」说明。）
 

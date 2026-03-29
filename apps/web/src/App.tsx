@@ -1,12 +1,26 @@
-function App() {
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Route, Routes } from "react-router-dom";
+import Layout from "./components/Layout";
+import AdminLoginPage from "./pages/AdminLoginPage";
+import AdminPage from "./pages/AdminPage";
+import MarketPage from "./pages/MarketPage";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: 1, refetchOnWindowFocus: false },
+  },
+});
+
+export default function App() {
   return (
-    <div className="min-h-dvh bg-zinc-950 text-zinc-100 flex flex-col items-center justify-center px-4">
-      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Richme</h1>
-      <p className="mt-3 max-w-md text-center text-sm text-zinc-400 sm:text-base">
-        个人股票笔记 · 响应式 Web（步骤 1）
-      </p>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<MarketPage />} />
+          <Route path="/admin/login" element={<AdminLoginPage />} />
+          <Route path="/admin" element={<AdminPage />} />
+        </Route>
+      </Routes>
+    </QueryClientProvider>
   );
 }
-
-export default App;

@@ -22,9 +22,9 @@ uv run alembic upgrade head
 uv run uvicorn richme_api.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-- Docs: http://127.0.0.1:8000/docs（`/docs` 中 **Authorize** 填 `Bearer <token>` 调 admin 接口）  
-- Health: http://127.0.0.1:8000/health  
-- 临时连库: http://127.0.0.1:8000/debug/db  
+- Docs: <http://127.0.0.1:8000/docs（`/docs`> 中 **Authorize** 填 `Bearer <token>` 调 admin 接口）  
+- Health: <http://127.0.0.1:8000/health>  
+- 临时连库: <http://127.0.0.1:8000/debug/db>  
 
 ### 步骤 3 主要路由（前缀 `/api/v1`）
 
@@ -34,6 +34,7 @@ uv run uvicorn richme_api.main:app --reload --host 0.0.0.0 --port 8000
 | admin | POST | `/admin/auth/login` | Body `{"password":"..."}` → JWT |
 | admin | POST | `/admin/stocks/bulk` | 批量 upsert 股票；**全量替换**该股 `stock_concepts` |
 | admin | PATCH | `/admin/stocks/{code}` | 部分更新基础字段 |
+| admin | GET | `/admin/themes` | 主题列表（后台维护） |
 | admin | POST | `/admin/themes` | 创建主题 |
 | admin | PATCH | `/admin/themes/{theme_id}` | 更新主题 |
 | admin | POST | `/admin/themes/{theme_id}/roles` | 新增角色时段；默认自动关闭同股同角色上一段 `valid_to` |

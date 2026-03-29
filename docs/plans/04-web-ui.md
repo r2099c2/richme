@@ -1,91 +1,138 @@
-# 步骤 4：前端展示、录入与 JSON 上传
+# 步骤 4：前端 — 市场主线（公开展示）与后台（登录 + 维护）
 
 ## 目标
 
-在 **`apps/web`** 用 **React + Vite + TS + Tailwind** 实现：配置 **API 基址**、**JWT 登录态**、**TanStack Query** 拉取/变更数据；页面覆盖 **日期 + 主题选择**、**当日股票表格编辑**、**JSON 导入**；布局 **移动优先、响应式**。
+在 **`apps/web`** 用 **React + Vite + TypeScript + Tailwind** 实现：
 
-**依赖**：步骤 3 已完成，本机 `http://127.0.0.1:8000`（或文档约定端口）可访问 `/docs`。
+| 区域 | 说明 |
+|------|------|
+| **前台（匿名）** | **一个页面**：**市场主线** — 以**列表**展示当前（按所选日期）的 **1 条或多条顶层主题**及其**支线**；每条主题内按**时间维度**组织展示；**股票**在主题（及子主题）区块**下方或区域内**排列展示（与 [03-api §3.5](03-api.md) 返回的树形结构一致）。 |
+| **后台（JWT）** | **两个页面**：① **简单登录**（密码 → token）；② **后台管理** — 支持上传 **单条或多条** 股票信息（基础字段 + 概念）；支持主题的 **新增、编辑**（不提供主题删除；结束一轮可 PATCH `ended_at`；与步骤 3 角色时段接口可后续再补 UI）。 |
 
-## 4.1 环境变量
+**页面共 3 个**（对应 3 条路由即可，名称可微调）：
 
-- `apps/web/.env.example`：
+1. **`/`** — 市场主线（公开展示）  
+2. **`/admin/login`** — 后台登录（仅表单 + `POST /api/v1/admin/auth/login`）  
+3. **`/admin`** — 后台管理（需已登录；股票上传 + 主题维护）
+
+**刻意不做（本版）**：终端用户注册、复杂权限、按日 canvas/JSON 批量导入旧契约；**主题物理删除**（前后端均不提供，将来需要再说）；结束展示可将主题 **PATCH `ended_at`**。
+
+**依赖**：步骤 3 API 可访问（`/docs`）；见 [03-api.md](03-api.md)。
+
+**技术栈**：**TanStack Query** 拉取/变更；`fetch` 或 **ky**；路由 **react-router-dom**；布局 **移动优先、响应式**。
+
+---
+
+## 4.1 信息架构与路由
+
+| 路径 | 鉴权 | 用途 |
+|------|------|------|
+| `/` | 无 | **市场主线**：日期选择（默认今日，**上海时区自然日**与 public API 一致）→ `GET /api/v1/public/themes/by-date/{date}`；列表展示多主线 + 子主题树；主题内按时间聚合展示；股票列表展示在对应主题节点下（API 已嵌套 `children` / `stocks`）。 |
+| `/admin/login` | 无 | 密码登录 → 存 `access_token`（`localStorage` 或 `sessionStorage`）→ 跳转 `/admin`。 |
+| `/admin` | 需 Bearer | **后台**：① 股票：**单条表单提交**或**多条批量**（同一契约 `POST /api/v1/admin/stocks/bulk`，单条时 `stocks` 数组长度为 1）；② 主题：列表或卡片 + **新建 / 编辑**（`POST`、`PATCH` `/api/v1/admin/themes/...`；不设删除按钮）。未登录访问应重定向到 `/admin/login`。 |
+
+可选：`/admin/logout` 为按钮清除 token 并回登录页，不必单独路由。
+
+---
+
+## 4.2 页面细化
+
+### 4.2.1 市场主线 `/`
+
+- **顶部**：日期选择器（`YYYY-MM-DD`），`useQuery` 依赖 `date` 拉取 public 接口。
+- **主体**：**列表**（非画布）。每一项对应 API 返回的一棵**顶层主题**：
+  - 展示：`name`、`slug`、`started_at`～`ended_at`、可选 `narrative` 摘要。
+  - **子主题（支线）**：缩进或子列表展示，同样带时间范围。
+  - **时间聚合**：同一主题下若有多段角色历史，首版可按 API 当日有效行展示；若需「按日历年/阶段」再分块，可在前端对 `stocks` 按 `role_name` / 时间段分组（**MVP 可先平铺列表**，后续增强）。
+  - **股票区**：每个主题（及子主题）节点下展示 `stocks[]`：`code`、`name`、`role_name`、`rank`；可选开关 `include_concepts=true` 展示概念标签。
+- **空态**：无数据时提示「当日无进行中的主题」或引导改日期。
+- **查询参数（可选）**：`?date=YYYY-MM-DD` 与路由同步，便于分享链接。
+
+### 4.2.2 后台登录 `/admin/login`
+
+- 单字段密码（或用户名+密码占位，步骤 3 仅为单密码）。
+- `POST /api/v1/admin/auth/login`，成功写入 token，跳转 `/admin`。
+- **401/503**：展示错误文案（与 API `detail` 一致）。
+
+### 4.2.3 后台管理 `/admin`
+
+- **股票**
+  - **单条**：表单字段对齐 `stocks` 表 + 概念（`concept_codes` 或内联 `concepts[]`，与 [03-api §3.6](03-api.md) 一致）→ 提交 `POST .../admin/stocks/bulk`，body 为 `{ "stocks": [ { ... } ] }`。
+  - **多条**：表格多行编辑或 JSON/CSV 粘贴（实现选一种）；最终仍组装为 **一个 bulk 请求** 或分多次 bulk（文档化策略）。
+- **主题**
+  - **新增**：表单 — `parent_id`（可选，空=顶层）、`slug`、`name`、`narrative`、`started_at`、`ended_at`。
+  - **编辑**：`PATCH .../admin/themes/{id}`（含设置 `ended_at` 以结束一轮主题）。
+- **角色时段（可选本版）**：若本版不做 UI，可在后台页放「稍后支持」或链到 `/docs`；要做则调用 `POST .../roles`。
+
+---
+
+## 4.3 环境变量
+
+`apps/web/.env.example`：
 
 ```env
 VITE_API_BASE_URL=http://127.0.0.1:8000
 ```
 
-- 本地复制为 `.env`（gitignore）。代码中仅使用 `import.meta.env.VITE_API_BASE_URL`，**不要**写死 URL。
+本地复制为 `.env`；代码只读 `import.meta.env.VITE_API_BASE_URL`，**禁止**写死 URL。
 
-## 4.2 依赖安装（pnpm）
+---
+
+## 4.4 依赖安装（pnpm）
 
 ```bash
 cd apps/web
 pnpm add @tanstack/react-query react-router-dom
-# 表单可选：react-hook-form；HTTP 可选：原生 fetch 或 ky/axios
+# 可选：ky、react-hook-form、date-fns（日期展示）
 ```
 
-## 4.3 API 客户端封装（建议）
+---
 
-- 新建 `src/lib/api.ts`（或类似）：
-  - `baseURL = VITE_API_BASE_URL`
-  - `fetch` 封装：自动加 `Authorization: Bearer <token>`（从 `localStorage` 或 `sessionStorage` 读取；登出清除）。
-  - 统一解析 `401` → 跳转登录页。
-- **路径前缀**：与步骤 3 一致，如 `/api/v1`。
+## 4.5 API 客户端（建议）
 
-## 4.4 路由（react-router-dom）
+- `src/lib/api.ts`（或分包）：
+  - `baseURL = VITE_API_BASE_URL`，前缀 `/api/v1`。
+  - **仅请求后台接口时**附加 `Authorization: Bearer <token>`；**public 请求不带 token**。
+  - `401` on admin → 清 token、跳转 `/admin/login`。
+- **OpenAPI**：联调以 `http://127.0.0.1:8000/docs` 为准。
 
-| 路径 | 用途 |
-|------|------|
-| `/login` | 密码登录，成功后存 token，跳转 `/` |
-| `/` | 选择日期、选择主题（下拉或侧栏）；展示当日列表 |
-| `/import` | 文本域或文件读取 JSON，调用 `POST /api/v1/days/import`，展示成功/错误 |
+---
 
-（路径名可调整，需在 README 说明。）
-
-## 4.5 TanStack Query
+## 4.6 TanStack Query（建议）
 
 - `QueryClientProvider` 包裹应用。
-- 列表页：`useQuery` 拉取 `GET /api/v1/days/{date}/themes/{themeId}`。
-- 保存单行：`useMutation` → `PUT .../stocks/{code}`，`onSuccess` 失效相关 query。
-- 导入：`useMutation` → `POST .../days/import`。
+- 市场主线：`useQuery(['themes', date], () => fetchPublicThemes(date), { enabled: !!date })`。
+- 后台：`useMutation` 提交 bulk、主题 CRUD，`onSuccess` `invalidateQueries` 相关键（若后台也展示列表，可与前台列表键协调）。
 
-## 4.6 UI 与响应式
+---
 
-- **移动优先**：表格在窄屏可改为卡片列表或横向滚动容器（`overflow-x-auto`）。
-- **Tailwind**：断点 `sm:` / `md:` 调整 padding、侧栏显隐。
-- **无障碍**：按钮与输入框带 `label`；焦点可见。
+## 4.7 UI 与响应式
 
-## 4.7 页面功能清单
+- **移动优先**：列表、表单在窄屏单列；表格可用横向滚动。
+- **Tailwind**：`sm:` / `md:` 控制间距与侧栏。
+- **无障碍**：`label`、按钮可聚焦、对比度合理。
 
-### 登录页
+---
 
-- 输入密码 → `POST /api/v1/auth/login` → 存 `access_token`。
+## 4.8 与后端联调检查（与步骤 3 一并验收）
 
-### 主页（当日编辑）
+- CORS：`OPTIONS` 预检正常；`5173` 访问 `8000`。
+- Public：无 token 可访问 `/`。
+- Admin：登录后带 token 可调 bulk 与 themes；PATCH 主题后前台日期视图数据一致。
 
-- 日期选择器（`input type="date"` 或组件库），格式 `YYYY-MM-DD`。
-- 主题：从步骤 3 约定的主题列表或 `GET /api/v1/public/themes/by-date/{date}` 等接口填充；支持跳转前记住上次 `themeId`（`localStorage`）。
-- 表格列（与 API 字段对齐）：代码、名称（可来自 stocks 或嵌套返回）、收盘价、梯队、地位、备注、标签（多选需 `tags` 列表接口，若步骤 3 未提供 `GET /tags` 则步骤 3 补一个只读列表）。
-- 「保存」：每行失焦保存或显式按钮调用 PUT。
-
-### 导入页
-
-- `textarea` 粘贴 JSON 或 `<input type="file" accept="application/json">` 读取。
-- 提交前可做前端 JSON.parse 预检；最终以服务端返回为准。
-- 展示 `400` 时 `missing_codes` 等明细。
-
-## 4.8 与后端联调检查
-
-- 浏览器 Network：预检请求 `OPTIONS` 返回正确 CORS。
-- 带 token 的请求 `200`；清除 token 后 `401` 回登录。
+---
 
 ## 完成判定（Definition of Done）
 
-- [ ] `.env.example` 存在且文档说明如何配置 API 地址。
-- [ ] 登录后可浏览至少一个受保护页面。
-- [ ] 能选择日期与主题并看到当日数据（空态亦可）。
-- [ ] 能编辑一行并持久化（刷新后仍在）。
-- [ ] JSON 导入页能提交步骤 3 约定格式的 body，并显示错误信息。
-- [ ] 窄屏（如 375px 宽）可用，无横向撑破视口（表格除外可用滚动）。
+**实现**：`apps/web` 已具备下列能力；与步骤 3 的浏览器联调可一并验收。
 
-**回溯**：总览与索引见 [README.md](README.md)。
+- [x] `.env.example` 与 README 说明 API 基址配置。
+- [x] **三个页面**路由可用：`/`、`/admin/login`、`/admin`。
+- [x] 市场主线：可选日期与 `?concepts=1`，列表展示多主线+支线+股票；空态提示。
+- [x] 后台登录：密码登录、token 存 `localStorage`、未登录重定向 `/admin/login`。
+- [x] 后台：单条表单与多条 JSON → `stocks/bulk`；主题新建、列表、`GET /admin/themes` + 编辑弹窗（`ended_at` 可清空表示进行中）；无主题删除。
+- [x] 布局移动优先；表格可横向滚动。
+
+- [ ] 与真实后端、CORS、生产环境一并验证（与步骤 3 DoD 中的联调项相同）。
+
+**回溯**：索引见 [README.md](README.md)。
