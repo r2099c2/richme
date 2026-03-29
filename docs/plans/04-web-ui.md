@@ -2,7 +2,7 @@
 
 ## 目标
 
-在 **`apps/web`** 用 **React + Vite + TS + Tailwind** 实现：配置 **API 基址**、**JWT 登录态**、**TanStack Query** 拉取/变更数据；页面覆盖 **日期 + 主线选择**、**当日股票表格编辑**、**JSON 导入**；布局 **移动优先、响应式**。
+在 **`apps/web`** 用 **React + Vite + TS + Tailwind** 实现：配置 **API 基址**、**JWT 登录态**、**TanStack Query** 拉取/变更数据；页面覆盖 **日期 + 主题选择**、**当日股票表格编辑**、**JSON 导入**；布局 **移动优先、响应式**。
 
 **依赖**：步骤 3 已完成，本机 `http://127.0.0.1:8000`（或文档约定端口）可访问 `/docs`。
 
@@ -37,7 +37,7 @@ pnpm add @tanstack/react-query react-router-dom
 | 路径 | 用途 |
 |------|------|
 | `/login` | 密码登录，成功后存 token，跳转 `/` |
-| `/` | 选择日期、选择主线（下拉或侧栏）；展示当日列表 |
+| `/` | 选择日期、选择主题（下拉或侧栏）；展示当日列表 |
 | `/import` | 文本域或文件读取 JSON，调用 `POST /api/v1/days/import`，展示成功/错误 |
 
 （路径名可调整，需在 README 说明。）
@@ -64,7 +64,7 @@ pnpm add @tanstack/react-query react-router-dom
 ### 主页（当日编辑）
 
 - 日期选择器（`input type="date"` 或组件库），格式 `YYYY-MM-DD`。
-- 主线：从 `GET /api/v1/themes` 填充；支持跳转前记住上次 `themeId`（`localStorage`）。
+- 主题：从步骤 3 约定的主题列表或 `GET /api/v1/public/themes/by-date/{date}` 等接口填充；支持跳转前记住上次 `themeId`（`localStorage`）。
 - 表格列（与 API 字段对齐）：代码、名称（可来自 stocks 或嵌套返回）、收盘价、梯队、地位、备注、标签（多选需 `tags` 列表接口，若步骤 3 未提供 `GET /tags` 则步骤 3 补一个只读列表）。
 - 「保存」：每行失焦保存或显式按钮调用 PUT。
 
@@ -83,7 +83,7 @@ pnpm add @tanstack/react-query react-router-dom
 
 - [ ] `.env.example` 存在且文档说明如何配置 API 地址。
 - [ ] 登录后可浏览至少一个受保护页面。
-- [ ] 能选择日期与主线并看到当日数据（空态亦可）。
+- [ ] 能选择日期与主题并看到当日数据（空态亦可）。
 - [ ] 能编辑一行并持久化（刷新后仍在）。
 - [ ] JSON 导入页能提交步骤 3 约定格式的 body，并显示错误信息。
 - [ ] 窄屏（如 375px 宽）可用，无横向撑破视口（表格除外可用滚动）。

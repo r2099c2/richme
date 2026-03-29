@@ -69,7 +69,7 @@ erDiagram
 | 列 | 类型 | 说明 |
 |----|------|------|
 | `id` | `Integer` PK autoincrement | **不同轮次唯一标识** |
-| `parent_id` | `Integer` FK `themes.id` nullable | **NULL = 顶层主线**；非空 = 该父主题下的支线（子节点） |
+| `parent_id` | `Integer` FK `themes.id` nullable | **NULL = 顶层主题**；非空 = 该父主题下的支线（子节点） |
 | `slug` | `String(64)` **不唯一** | 便于筛选/展示；同 slug 多行表示历史上多轮炒作 |
 | `name` | `String(128)` | 展示名 |
 | `narrative` | `Text` nullable | 核心逻辑等（可选） |
@@ -185,10 +185,10 @@ uv run alembic upgrade head
 
 ## 2.8 与步骤 3 / 4 文档的联动检查（待对齐）
 
-**说明**：下列两项属于 **步骤 3 / 4** 的文档与实现工作；步骤 2 只需在本节 **登记** 待办（已完成）。实施数据模型后请修订：
+**说明**：下列两项属于 **步骤 3 / 4** 的文档与实现工作；步骤 2 只需在本节 **登记** 待办（已完成）。
 
-- [ ] [03-api.md](03-api.md)：删除基于 `daily_themes` / `daily_stocks` 的 `/days/...` 契约；补充 `themes`、`theme_stock_roles`、`concepts`、`stock_concepts` 的 CRUD/查询草案（含按 `slug`、时间区间、概念筛票等）。
-- [ ] [04-web-ui.md](04-web-ui.md)：将「按日主线编辑」调整为「主题树 + 角色时间轴 + 概念维护」等占位描述。
+- [x] [03-api.md](03-api.md)：已改为 **`admin`（JWT）+ `public`（匿名）** 最小集；移除 `daily_*` 与 `/days/...`；与 `themes` / `theme_stock_roles` / `concepts` / `stock_concepts` 对齐（见该文 §3.5–3.7）。
+- [ ] [04-web-ui.md](04-web-ui.md)：将「按日主题编辑」等旧描述调整为 **后台上传/维护 + 前台按日主题展示**（与 03 一致）。
 
 （索引条目同步于 [docs/plans/README.md](README.md) 中「步骤 2 修订」说明。）
 
@@ -203,4 +203,4 @@ uv run alembic upgrade head
 - [x] 结构变更路径明确：**只改 models → autogenerate → review → upgrade**。
 - [x] §2.8 待对齐项已登记；**03/04 正文修订**在步骤 3、4 中完成（见上表勾选）。
 
-**下一步**：按 §2.8 修订 [03-api.md](03-api.md) 与 [04-web-ui.md](04-web-ui.md)，再实现业务 API；或继续按 [README.md](README.md) 顺序推进。
+**下一步**：步骤 3 API 已实现；继续步骤 4 并修订 [04-web-ui.md](04-web-ui.md)，再与步骤 3 一起做联调验收。
