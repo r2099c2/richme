@@ -151,12 +151,12 @@ api/src/richme_api/
 
 ## 完成判定（Definition of Done）
 
-**代码与文档**：已在仓库内实现并通过 `uv run pytest tests/`（见 `api/`）。**浏览器 CORS、与前端联调及端到端验收**：与 **步骤 4** 完成后一并验证。
+**代码与文档**：已在仓库内实现并通过 `uv run pytest tests/`（见 `api/`）。**与前端联调**：`apps/web` 已对接；生产部署另议。
 
 - [x] `/docs` 中 `public` 与 `admin` 分组清晰；管理员可登录并调用 **§3.6** 路由；匿名可访问 **§3.5**。
-- [x] CORS 已配置（dev 默认 5173）；浏览器侧预检与真实联调留待步骤 4 复验。
+- [x] CORS 已配置（dev 默认 5173）；与本机前端联调可验收。
 - [x] `POST /api/v1/admin/stocks/bulk` 在合法负载下事务成功；失败策略与文档一致。
 - [x] `GET /api/v1/public/themes/by-date/{date}` 的聚合规则与 §3.5 一致（pytest 覆盖匿名访问；含种子数据断言可后续加强）。
 - [x] `api/README.md` 已补充：主要路由、**仅后台 JWT**、前台匿名、环境变量与哈希生成示例。
 
-**下一步**：实现 [04-web-ui.md](04-web-ui.md)（后台上传/维护 + 前台按日主题展示），再与步骤 3 一起做联调验收。
+**下一步**：按业务需求迭代 API / 部署；总览见 [docs/plans/README.md](README.md) 与 `.cursor/plans/richme_docker与四步实施_d836a99e.plan.md`（已标记完成）。

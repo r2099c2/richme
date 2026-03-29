@@ -4,16 +4,16 @@ overview: 总览：api/（**uv** 管理 Python 与依赖）+ apps/web（**pnpm**
 todos:
   - id: step1-scaffold
     content: 执行 docs/plans/01-scaffold.md 至 DoD 完成
-    status: pending
+    status: completed
   - id: step2-orm-alembic
     content: 执行 docs/plans/02-database-orm.md 至 DoD 完成
-    status: pending
+    status: completed
   - id: step3-api
     content: 执行 docs/plans/03-api.md 至 DoD 完成
-    status: pending
+    status: completed
   - id: step4-web
     content: 执行 docs/plans/04-web-ui.md 至 DoD 完成
-    status: pending
+    status: completed
 isProject: false
 ---
 
@@ -52,5 +52,7 @@ flowchart LR
 - ORM：**SQLAlchemy 2 同步 Session** + **Alembic**；结构变更只走模型 + 迁移。
 
 每份子计划文末有 **完成判定（Definition of Done）** 勾选清单；总览不再重复细节。
+
+**状态（2026-03）**：步骤 1–4 已按 `docs/plans/01`→`04` 交付；细则以各文档 DoD 为准。后续迭代（生产部署、观测、业务功能）另立计划。
 
 **维护者**：pnpm / uv 通常已安装；其它同类工具选型实装前须先确认。见 [docs/plans/MAINTAINER.md](docs/plans/MAINTAINER.md)。

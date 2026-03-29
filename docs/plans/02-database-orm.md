@@ -203,4 +203,4 @@ uv run alembic upgrade head
 - [x] 结构变更路径明确：**只改 models → autogenerate → review → upgrade**。
 - [x] §2.8 待对齐项已登记；**03/04 正文修订**在步骤 3、4 中完成（见上表勾选）。
 
-**下一步**：步骤 3 API 已实现；继续步骤 4 并修订 [04-web-ui.md](04-web-ui.md)，再与步骤 3 一起做联调验收。
+**下一步**：四步实施已交付；迭代见 [docs/plans/README.md](README.md)。

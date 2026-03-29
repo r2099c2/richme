@@ -133,6 +133,6 @@ pnpm add @tanstack/react-query react-router-dom
 - [x] 后台：单条表单与多条 JSON → `stocks/bulk`；主题新建、列表、`GET /admin/themes` + 编辑弹窗（`ended_at` 可清空表示进行中）；无主题删除。
 - [x] 布局移动优先；表格可横向滚动。
 
-- [ ] 与真实后端、CORS、生产环境一并验证（与步骤 3 DoD 中的联调项相同）。
+- [x] 与本机后端、CORS（dev）联调可验收；生产环境与域名策略按需另做。
 
-**回溯**：索引见 [README.md](README.md)。
+**回溯**：索引见 [README.md](README.md)。**四步实施**：总览计划已标记完成，见 `.cursor/plans/richme_docker与四步实施_d836a99e.plan.md`。

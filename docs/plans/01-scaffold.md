@@ -137,10 +137,10 @@ pnpm dev
 
 ## 完成判定（Definition of Done）
 
-- [ ] `docker compose up -d` 后，`psql` 或 `SELECT 1` 可连上 `richme` 库。
-- [ ] `GET /health` 在本机返回成功（通过 `uv run uvicorn`）。
-- [ ] `apps/web` 下 **`pnpm dev`** 可访问页面。
-- [ ] `.env.example` 存在且与 compose 中数据库账号一致；`.env` 未提交 Git。
-- [ ] 根 README 含上述三条启动说明，并写明 **pnpm / uv**。
+- [x] `docker compose up -d` 后，`psql` 或 `SELECT 1` 可连上 `richme` 库。
+- [x] `GET /health` 在本机返回成功（通过 `uv run uvicorn`）。
+- [x] `apps/web` 下 **`pnpm dev`** 可访问页面。
+- [x] `.env.example` 存在且与 compose 中数据库账号一致；`.env` 未提交 Git。
+- [x] 根 README 含上述三条启动说明，并写明 **pnpm / uv**。
 
-**下一步**：打开 [02-database-orm.md](02-database-orm.md)。
+**下一步**：后续步骤见 [docs/plans/README.md](README.md)（四步总览已交付）。
